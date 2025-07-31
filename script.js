@@ -149,5 +149,5 @@ document.addEventListener('DOMContentLoaded', function() {
         };
         return icons[code] || "❔";
     }
-});
 
+   

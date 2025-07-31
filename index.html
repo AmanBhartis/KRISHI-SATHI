@@ -35,10 +35,10 @@
           <a class="nav-link active" aria-current="page" href="#">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Weather</a>
+          <a class="nav-link" href="WEATHER.HTML">Weather</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Market</a>
+          <a class="nav-link" href="market.html">Market</a>
         </li>
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -196,18 +196,18 @@
     <div class="row">
         <div class="col-md-8">
             <h2>✉️ Contact & Feedback</h2>
-            <form>
-                <div class="mb-2">
-                    <input type="text" class="form-control" placeholder="Your Name" required>
-                </div>
-                <div class="mb-2">
-                    <input type="email" class="form-control" placeholder="Your Email" required>
-                </div>
-                <div class="mb-2">
-                    <textarea class="form-control" rows="3" placeholder="Your Message or Feedback" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary">Send</button>
-            </form>
+            <form action="https://formspree.io/f/manbbqay" method="POST">
+    <div class="mb-2">
+        <input type="text" class="form-control" name="name" placeholder="Your Name" required>
+    </div>
+    <div class="mb-2">
+        <input type="email" class="form-control" name="email" placeholder="Your Email" required>
+    </div>
+    <div class="mb-2">
+        <textarea class="form-control" name="message" rows="3" placeholder="Your Message or Feedback" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Send</button>
+</form>
         </div>
         <div class="col-md-4 d-flex align-items-center">
             <div>
@@ -235,5 +235,23 @@
 </footer>
 <script src="script.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+  // Initialize EmailJS with your user ID
+  (function() {
+    emailjs.init("StOz82KazVGWVqIsy"); // Replace with your EmailJS user ID
+  })();
+
+  document.getElementById('contact-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    emailjs.sendForm('service_h5suvll', 'template_2c0otbd', this)
+      .then(function() {
+        document.getElementById('form-status').innerHTML = "<span style='color:green;'>Message sent successfully!</span>";
+        document.getElementById('contact-form').reset();
+      }, function(error) {
+        document.getElementById('form-status').innerHTML = "<span style='color:red;'>Failed to send. Please check your EmailJS IDs and try again.</span>";
+      });
+  });
+</script>
   </body>
 </html>
