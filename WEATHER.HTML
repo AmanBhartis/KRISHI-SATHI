@@ -45,6 +45,22 @@
       </div>
     </div>
 
+    <div class="container mb-4">
+      <h2>🧪 Fertilizer Advice & Resources</h2>
+      <div id="fertilizer-advice" class="mb-3 alert alert-info"></div>
+      <div>
+        <h5>🎥 Fertilizer Use & Best Practices (YouTube)</h5>
+        <div class="row">
+          <div class="col-md-6 mb-2">
+            <iframe width="100%" height="215" src="https://www.youtube.com/embed/8Kf6Qd2w4gE" title="Fertilizer Application Tips for Farmers" frameborder="0" allowfullscreen></iframe>
+          </div>
+          <div class="col-md-6 mb-2">
+            <iframe width="100%" height="215" src="https://www.youtube.com/embed/6nQZy4QyQnA" title="How to Use Fertilizer for Maximum Yield" frameborder="0" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <footer class="bg-light text-center py-3 mt-4">
       <div class="col-md-4 mx-auto">
         <h4>📍 Our Address</h4>
@@ -121,14 +137,68 @@
         }
       }
 
-      // Irrigation advice logic
+      // Enhanced irrigation advice logic
       function getIrrigationAdvice(avgRain) {
         if (avgRain > 40) {
-          return "Rainfall is sufficient. Minimal irrigation required.";
+          return `
+            <strong>Rainfall is sufficient. Minimal irrigation required.</strong><br>
+            <ul>
+              <li>Monitor for waterlogging, especially in low-lying fields.</li>
+              <li>Use raised beds for sensitive crops.</li>
+              <li>Delay irrigation if heavy rain is forecasted.</li>
+              <li>Check for fungal diseases due to excess moisture.</li>
+            </ul>
+          `;
+        } else if (avgRain > 20) {
+          return `
+            <strong>Good rainfall, but supplement as needed.</strong><br>
+            <ul>
+              <li>Irrigate only if soil surface appears dry.</li>
+              <li>Mulch to retain soil moisture and reduce evaporation.</li>
+              <li>Check root zone moisture before irrigating.</li>
+            </ul>
+          `;
         } else if (avgRain > 10) {
-          return "Moderate rainfall. Supplement with irrigation as needed.";
+          return `
+            <strong>Moderate rainfall. Supplement with irrigation as needed.</strong><br>
+            <ul>
+              <li>Increase irrigation frequency for shallow-rooted crops.</li>
+              <li>Use drip or sprinkler systems for efficient water use.</li>
+              <li>Water early morning or late evening to reduce evaporation.</li>
+            </ul>
+          `;
+        } else if (avgRain > 0) {
+          return `
+            <strong>Low rainfall. Regular irrigation is recommended.</strong><br>
+            <ul>
+              <li>Prioritize irrigation for fruiting and flowering crops.</li>
+              <li>Apply water in small, frequent doses for sandy soils.</li>
+              <li>Monitor for drought stress (wilting, leaf curl).</li>
+            </ul>
+          `;
         } else {
-          return "Low rainfall. Regular irrigation is recommended.";
+          return `
+            <strong>No rainfall. Irrigation is essential.</strong><br>
+            <ul>
+              <li>Increase irrigation frequency for all crops.</li>
+              <li>Use mulching and shade nets to conserve moisture.</li>
+              <li>Check for signs of severe drought stress and irrigate immediately.</li>
+            </ul>
+          `;
+        }
+      }
+
+      // Example: Fetch fertilizer advice from a public API (OpenAI or mock)
+      // For demo, we'll use a static suggestion based on weather/crop, but you can replace with a real API call.
+      function getFertilizerAdvice(avgTemp, avgRain) {
+        if (avgRain > 40) {
+          return "Due to high rainfall, use slow-release nitrogen fertilizers and avoid urea top-dressing before heavy rain. Apply potash to improve crop resilience.";
+        } else if (avgTemp > 30) {
+          return "High temperature: Use organic manure and split nitrogen application to reduce losses. Ensure adequate potassium for heat stress.";
+        } else if (avgTemp > 20) {
+          return "Balanced NPK (Nitrogen, Phosphorus, Potassium) fertilizers are recommended. Test soil before application for best results.";
+        } else {
+          return "Cool weather: Use phosphorus-rich fertilizers at sowing. Avoid excessive nitrogen to prevent delayed maturity.";
         }
       }
 
@@ -169,6 +239,7 @@
             const avgRain = totalRain / days.length;
             document.getElementById('crop-suggestion').innerHTML = getCropSuggestion(avgTemp, avgRain);
             document.getElementById('irrigation-advice').innerHTML = getIrrigationAdvice(avgRain);
+            document.getElementById('fertilizer-advice').innerHTML = getFertilizerAdvice(avgTemp, avgRain);
           })
           .catch(() => {
             document.getElementById('weather-forecast').textContent = "Unable to fetch weather data.";
@@ -183,6 +254,7 @@
             document.getElementById('weather-forecast').textContent = "Unable to retrieve your location.";
             document.getElementById('crop-suggestion').textContent = "";
             document.getElementById('irrigation-advice').textContent = "";
+            document.getElementById('fertilizer-advice').textContent = "";
           }
         );
       } else {
@@ -190,3 +262,5 @@
       }
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
