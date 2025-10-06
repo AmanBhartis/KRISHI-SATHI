@@ -1,266 +1,304 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Weather Forecast & Crop Advice | KRISHI SATHI</title>
-    <meta name="description" content="7-day weather forecast, crop suggestions, and irrigation advice for your location.">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="templates/css/style.css">
-  </head>
-  <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="index.html">KRISHI SATHI</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNavDropdown">
-          <ul class="navbar-nav ms-auto gap-3">
-            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-            <li class="nav-item"><a class="nav-link active" href="WEATHER.HTML">Weather</a></li>
-            <li class="nav-item"><a class="nav-link" href="market.html">Market</a></li>
-          </ul>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Weather Forecast - Krishi Sathi</title>
+    <!-- Bootstrap for grid system and basic components -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        /* --- User Provided CSS Base Theme --- */
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=1932&auto=format&fit=crop') no-repeat center center fixed;
+            background-size: cover;
+            opacity: 0.1;
+            z-index: -2;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 70% 20%, rgba(218,165,32,0.08) 0%, transparent 60%),
+                        radial-gradient(circle at 20% 80%, rgba(205,133,63,0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: -1;
+            animation: bgmove 12s linear infinite alternate;
+        }
+
+        @keyframes bgmove {
+            0% { background-position: 70% 20%, 20% 80%; }
+            100% { background-position: 60% 30%, 30% 70%; }
+        }
+
+        .navbar {
+            background: rgba(255, 248, 220, 0.95) !important;
+            border-radius: 0 0 18px 18px;
+            box-shadow: 0 4px 24px rgba(205, 133, 63, 0.15);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: #2c5f2d !important;
+            letter-spacing: 1px;
+            font-size: 1.8rem;
+            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+        }
+
+        .nav-link {
+            color: #2c5f2d !important;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+            margin: 0 4px;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #1a4c1a !important;
+            background: rgba(76, 175, 80, 0.1);
+            transform: translateY(-1px);
+        }
+
+        header.page-header {
+            background: rgba(255, 248, 220, 0.85);
+            border-radius: 18px;
+            margin-bottom: 24px;
+            padding: 32px 24px;
+            box-shadow: 0 8px 32px rgba(205, 133, 63, 0.15);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(218, 165, 32, 0.2);
+        }
+
+        h1, h2, h3 {
+            color: #2c5f2d;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.6);
+        }
+        
+        h1 { font-size: 2.5rem; }
+
+        .custom-container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: 28px;
+            margin-bottom: 32px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .table {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+        }
+
+        footer {
+            background: linear-gradient(135deg, rgba(255, 248, 220, 0.95), rgba(218, 165, 32, 0.1)) !important;
+            color: #2c5f2d; border-top: 3px solid #4CAF50;
+            border-radius: 18px 18px 0 0;
+            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px); margin-top: 48px;
+            padding: 24px; text-align: center;
+        }
+
+        .fade-in { animation: fadeIn 0.8s ease-in-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Custom Styles for this Page --- */
+        .weather-icon-large { font-size: 5rem; text-shadow: 2px 2px 8px rgba(0,0,0,0.2); }
+        .table-hover tbody tr:hover { background-color: rgba(76, 175, 80, 0.05); }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">🌾 Krishi Sathi</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="advisory.html">Advisory</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#">Weather</a></li>
+                    <li class="nav-item"><a class="nav-link" href="schemes.html">Schemes</a></li>
+                </ul>
+            </div>
         </div>
-      </div>
     </nav>
 
-    <header class="container mt-4">
-      <h1>🌦️ 7-Day Weather Forecast & Crop Advice</h1>
-      <p>Get the latest weather forecast for your location, crop suggestions, and irrigation advice.</p>
-    </header>
+    <!-- Main Content -->
+    <div class="container py-4">
+        
+        <header class="page-header text-center fade-in">
+            <h1>10-Day Weather Forecast</h1>
+            <p class="lead text-secondary" id="location-name">Detecting your location...</p>
+        </header>
 
-    <div class="container mb-4">
-      <div class="row">
-        <div class="col-md-7">
-          <h2>📅 7-Day Weather Forecast</h2>
-          <div id="weather-forecast" class="mb-3"></div>
-        </div>
-        <div class="col-md-5">
-          <h2>🌱 Crop Suggestions</h2>
-          <div id="crop-suggestion"></div>
-          <h2 class="mt-4">💧 Irrigation Advice</h2>
-          <div id="irrigation-advice"></div>
-        </div>
-      </div>
+        <!-- Current Weather & Forecast Table -->
+        <section id="forecast-section" class="custom-container fade-in" style="animation-delay: 0.2s;">
+            <div id="current-weather-container" class="text-center mb-5">
+                <!-- Current weather loads here -->
+                <div class="spinner-border text-success" role="status"><span class="visually-hidden">Loading...</span></div>
+            </div>
+
+            <h2 class="text-center mb-4">10-Day Forecast</h2>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle text-center">
+                    <thead class="table-dark" style="background: linear-gradient(135deg, #2c5f2d, #4CAF50);">
+                        <tr>
+                            <th>Date</th>
+                            <th>Forecast</th>
+                            <th>Temp (Hi/Lo)</th>
+                            <th>Chance of Rain</th>
+                            <th class="d-none d-md-table-cell">Summary</th>
+                        </tr>
+                    </thead>
+                    <tbody id="forecast-table-body">
+                        <!-- Forecast data loads here, or an error message -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </div>
 
-    <div class="container mb-4">
-      <h2>🧪 Fertilizer Advice & Resources</h2>
-      <div id="fertilizer-advice" class="mb-3 alert alert-info"></div>
-      <div>
-        <h5>🎥 Fertilizer Use & Best Practices (YouTube)</h5>
-        <div class="row">
-          <div class="col-md-6 mb-2">
-            <iframe width="100%" height="215" src="https://www.youtube.com/embed/8Kf6Qd2w4gE" title="Fertilizer Application Tips for Farmers" frameborder="0" allowfullscreen></iframe>
-          </div>
-          <div class="col-md-6 mb-2">
-            <iframe width="100%" height="215" src="https://www.youtube.com/embed/6nQZy4QyQnA" title="How to Use Fertilizer for Maximum Yield" frameborder="0" allowfullscreen></iframe>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <footer class="bg-light text-center py-3 mt-4">
-      <div class="col-md-4 mx-auto">
-        <h4>📍 Our Address</h4>
-        <address>
-          Krishi Sathi Center<br>
-          123 Greenfield Road,<br>
-          Patna, Bihar, 800001<br>
-          Phone: +91 98765 43210<br>
-          Email: info@krishisathi.com
-        </address>
-        <small>© 2025 Krishi Sathi. All rights reserved.</small>
-      </div>
+    <!-- Footer -->
+    <footer class="text-center py-4">
+        <p class="mb-1">&copy; 2025 Krishi Sathi. All Rights Reserved.</p>
     </footer>
-
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      // Weather code to description mapping
-      function weatherDescription(code) {
-        const map = {
-          0: "Clear sky",
-          1: "Mainly clear",
-          2: "Partly cloudy",
-          3: "Overcast",
-          45: "Fog",
-          48: "Depositing rime fog",
-          51: "Light drizzle",
-          53: "Moderate drizzle",
-          55: "Dense drizzle",
-          56: "Light freezing drizzle",
-          57: "Dense freezing drizzle",
-          61: "Slight rain",
-          63: "Moderate rain",
-          65: "Heavy rain",
-          66: "Light freezing rain",
-          67: "Heavy freezing rain",
-          71: "Slight snow fall",
-          73: "Moderate snow fall",
-          75: "Heavy snow fall",
-          77: "Snow grains",
-          80: "Slight rain showers",
-          81: "Moderate rain showers",
-          82: "Violent rain showers",
-          85: "Slight snow showers",
-          86: "Heavy snow showers",
-          95: "Thunderstorm",
-          96: "Thunderstorm with slight hail",
-          99: "Thunderstorm with heavy hail"
-        };
-        return map[code] || "Unknown";
-      }
+        document.addEventListener('DOMContentLoaded', function() {
 
-      // Weather code to emoji
-      function weatherIcon(code) {
-        const map = {
-          0: "☀️", 1: "🌤️", 2: "⛅", 3: "☁️",
-          45: "🌫️", 48: "🌫️", 51: "🌦️", 53: "🌦️", 55: "🌦️",
-          56: "🌧️", 57: "🌧️", 61: "🌧️", 63: "🌧️", 65: "🌧️",
-          66: "🌧️", 67: "🌧️", 71: "🌨️", 73: "🌨️", 75: "🌨️",
-          77: "🌨️", 80: "🌦️", 81: "🌦️", 82: "🌦️",
-          85: "🌨️", 86: "🌨️", 95: "⛈️", 96: "⛈️", 99: "⛈️"
-        };
-        return map[code] || "❓";
-      }
+            const getWeatherInfo = (code, largeIcon = false) => {
+                const codes = {
+                    0: { desc: "Clear", icon: "fa-sun" }, 1: { desc: "Mainly Clear", icon: "fa-cloud-sun" },
+                    2: { desc: "Partly Cloudy", icon: "fa-cloud" }, 3: { desc: "Overcast", icon: "fa-cloud" },
+                    45: { desc: "Fog", icon: "fa-smog" }, 48: { desc: "Rime Fog", icon: "fa-smog" },
+                    51: { desc: "Light Drizzle", icon: "fa-cloud-rain" }, 53: { desc: "Drizzle", icon: "fa-cloud-rain" }, 55: { desc: "Dense Drizzle", icon: "fa-cloud-showers-heavy" },
+                    61: { desc: "Light Rain", icon: "fa-cloud-rain" }, 63: { desc: "Rain", icon: "fa-cloud-showers-heavy" }, 65: { desc: "Heavy Rain", icon: "fa-cloud-showers-heavy" },
+                    80: { desc: "Light Showers", icon: "fa-cloud-sun-rain" }, 81: { desc: "Showers", icon: "fa-cloud-sun-rain" }, 82: { desc: "Heavy Showers", icon: "fa-cloud-showers-heavy" },
+                    95: { desc: "Thunderstorm", icon: "fa-cloud-bolt" }
+                };
+                const info = codes[code] || { desc: "Unknown", icon: "fa-question" };
+                const iconClass = largeIcon ? 'weather-icon-large' : 'fs-4';
+                return { ...info, iconHTML: `<i class="fa-solid ${info.icon} ${iconClass}"></i>` };
+            };
+            
+            const handleLocationError = () => {
+                const errorMsg = "Could not access your location. Please enable location services in your browser settings and refresh the page.";
+                document.getElementById('location-name').textContent = "Location access denied.";
+                document.getElementById('current-weather-container').innerHTML = `<div class="alert alert-danger">${errorMsg}</div>`;
+                document.getElementById('forecast-table-body').innerHTML = `<tr><td colspan="5" class="text-center text-danger p-4">${errorMsg}</td></tr>`;
+            };
 
-      // Crop suggestion logic based on weather
-      function getCropSuggestion(avgTemp, avgRain) {
-        if (avgRain > 40) {
-          return "Recommended crops: Rice, Jute, Sugarcane (high rainfall crops)";
-        } else if (avgTemp > 30) {
-          return "Recommended crops: Maize, Cotton, Groundnut (heat-tolerant crops)";
-        } else if (avgTemp > 20) {
-          return "Recommended crops: Wheat, Barley, Pulses, Vegetables";
-        } else {
-          return "Recommended crops: Potato, Mustard, Peas (cool season crops)";
-        }
-      }
+            const getCityName = async (lat, lon) => {
+                try {
+                    const response = await fetch(`https://geocode.maps.co/reverse?lat=${lat}&lon=${lon}`);
+                    const data = await response.json();
+                    const city = data.address?.city || data.address?.town || data.address?.village || 'your location';
+                    const state = data.address?.state || '';
+                    return `${city}, ${state}`;
+                } catch (error) {
+                    console.error('Reverse geocoding failed:', error);
+                    return 'your current location';
+                }
+            };
 
-      // Enhanced irrigation advice logic
-      function getIrrigationAdvice(avgRain) {
-        if (avgRain > 40) {
-          return `
-            <strong>Rainfall is sufficient. Minimal irrigation required.</strong><br>
-            <ul>
-              <li>Monitor for waterlogging, especially in low-lying fields.</li>
-              <li>Use raised beds for sensitive crops.</li>
-              <li>Delay irrigation if heavy rain is forecasted.</li>
-              <li>Check for fungal diseases due to excess moisture.</li>
-            </ul>
-          `;
-        } else if (avgRain > 20) {
-          return `
-            <strong>Good rainfall, but supplement as needed.</strong><br>
-            <ul>
-              <li>Irrigate only if soil surface appears dry.</li>
-              <li>Mulch to retain soil moisture and reduce evaporation.</li>
-              <li>Check root zone moisture before irrigating.</li>
-            </ul>
-          `;
-        } else if (avgRain > 10) {
-          return `
-            <strong>Moderate rainfall. Supplement with irrigation as needed.</strong><br>
-            <ul>
-              <li>Increase irrigation frequency for shallow-rooted crops.</li>
-              <li>Use drip or sprinkler systems for efficient water use.</li>
-              <li>Water early morning or late evening to reduce evaporation.</li>
-            </ul>
-          `;
-        } else if (avgRain > 0) {
-          return `
-            <strong>Low rainfall. Regular irrigation is recommended.</strong><br>
-            <ul>
-              <li>Prioritize irrigation for fruiting and flowering crops.</li>
-              <li>Apply water in small, frequent doses for sandy soils.</li>
-              <li>Monitor for drought stress (wilting, leaf curl).</li>
-            </ul>
-          `;
-        } else {
-          return `
-            <strong>No rainfall. Irrigation is essential.</strong><br>
-            <ul>
-              <li>Increase irrigation frequency for all crops.</li>
-              <li>Use mulching and shade nets to conserve moisture.</li>
-              <li>Check for signs of severe drought stress and irrigate immediately.</li>
-            </ul>
-          `;
-        }
-      }
+            const fetchWeatherForLocation = async (lat, lon) => {
+                const locationName = await getCityName(lat, lon);
+                document.getElementById('location-name').textContent = `Detailed forecast for ${locationName}`;
 
-      // Example: Fetch fertilizer advice from a public API (OpenAI or mock)
-      // For demo, we'll use a static suggestion based on weather/crop, but you can replace with a real API call.
-      function getFertilizerAdvice(avgTemp, avgRain) {
-        if (avgRain > 40) {
-          return "Due to high rainfall, use slow-release nitrogen fertilizers and avoid urea top-dressing before heavy rain. Apply potash to improve crop resilience.";
-        } else if (avgTemp > 30) {
-          return "High temperature: Use organic manure and split nitrogen application to reduce losses. Ensure adequate potassium for heat stress.";
-        } else if (avgTemp > 20) {
-          return "Balanced NPK (Nitrogen, Phosphorus, Potassium) fertilizers are recommended. Test soil before application for best results.";
-        } else {
-          return "Cool weather: Use phosphorus-rich fertilizers at sowing. Avoid excessive nitrogen to prevent delayed maturity.";
-        }
-      }
+                const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=10&timezone=auto`;
 
-      // Fetch and display weather
-      function showWeather(lat, lon) {
-        const api = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode&timezone=auto&forecast_days=7`;
-        fetch(api)
-          .then(res => res.json())
-          .then(data => {
-            if (!data.daily) {
-              document.getElementById('weather-forecast').textContent = "Weather data not available.";
-              return;
-            }
-            const days = data.daily.time;
-            const maxTemps = data.daily.temperature_2m_max;
-            const minTemps = data.daily.temperature_2m_min;
-            const rains = data.daily.precipitation_sum;
-            const codes = data.daily.weathercode;
+                const currentWeatherContainer = document.getElementById('current-weather-container');
+                const forecastTableBody = document.getElementById('forecast-table-body');
 
-            let html = '<table class="table table-bordered"><thead><tr><th>Date</th><th>Weather</th><th>Max Temp (°C)</th><th>Min Temp (°C)</th><th>Rainfall (mm)</th></tr></thead><tbody>';
-            let totalTemp = 0, totalRain = 0;
-            for (let i = 0; i < days.length; i++) {
-              html += `<tr>
-                <td>${days[i]}</td>
-                <td>${weatherIcon(codes[i])} ${weatherDescription(codes[i])}</td>
-                <td>${maxTemps[i]}</td>
-                <td>${minTemps[i]}</td>
-                <td>${rains[i]}</td>
-              </tr>`;
-              totalTemp += (maxTemps[i] + minTemps[i]) / 2;
-              totalRain += rains[i];
-            }
-            html += '</tbody></table>';
-            document.getElementById('weather-forecast').innerHTML = html;
+                try {
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    const data = await response.json();
 
-            // Crop suggestion and irrigation advice
-            const avgTemp = totalTemp / days.length;
-            const avgRain = totalRain / days.length;
-            document.getElementById('crop-suggestion').innerHTML = getCropSuggestion(avgTemp, avgRain);
-            document.getElementById('irrigation-advice').innerHTML = getIrrigationAdvice(avgRain);
-            document.getElementById('fertilizer-advice').innerHTML = getFertilizerAdvice(avgTemp, avgRain);
-          })
-          .catch(() => {
-            document.getElementById('weather-forecast').textContent = "Unable to fetch weather data.";
-          });
-      }
+                    // 1. Populate Current Weather
+                    const current = data.current;
+                    const currentWeatherInfo = getWeatherInfo(current.weather_code, true);
+                    currentWeatherContainer.innerHTML = `
+                        <p class="lead mb-1">Current Weather</p>
+                        ${currentWeatherInfo.iconHTML}
+                        <h3 class="display-3 fw-bold">${current.temperature_2m}°C</h3>
+                        <p class="fs-4">${currentWeatherInfo.desc}</p>
+                    `;
 
-      // Get location and show weather
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          pos => showWeather(pos.coords.latitude, pos.coords.longitude),
-          () => {
-            document.getElementById('weather-forecast').textContent = "Unable to retrieve your location.";
-            document.getElementById('crop-suggestion').textContent = "";
-            document.getElementById('irrigation-advice').textContent = "";
-            document.getElementById('fertilizer-advice').textContent = "";
-          }
-        );
-      } else {
-        document.getElementById('weather-forecast').textContent = "Geolocation not supported.";
-      }
+                    // 2. Populate 10-Day Forecast Table
+                    forecastTableBody.innerHTML = ''; // Clear placeholder
+                    const daily = data.daily;
+                    for (let i = 0; i < 10; i++) {
+                        const date = new Date(daily.time[i]);
+                        const dayName = i === 0 ? 'Today' : date.toLocaleDateString('en-IN', { weekday: 'short' });
+                        const fullDate = date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
+                        const dayWeatherInfo = getWeatherInfo(daily.weather_code[i]);
+
+                        const row = `
+                            <tr>
+                                <td class="fw-bold">${dayName}<br class="d-none d-sm-block"/><span class="small text-muted">${fullDate}</span></td>
+                                <td>${dayWeatherInfo.iconHTML}<p class="d-md-none small mb-0">${dayWeatherInfo.desc}</p></td>
+                                <td>${Math.round(daily.temperature_2m_max[i])}° / ${Math.round(daily.temperature_2m_min[i])}°C</td>
+                                <td class="text-primary fw-bold">${daily.precipitation_probability_max[i]}%</td>
+                                <td class="d-none d-md-table-cell">${dayWeatherInfo.desc}</td>
+                            </tr>
+                        `;
+                        forecastTableBody.innerHTML += row;
+                    }
+                } catch (error) {
+                    console.error("Weather fetch error:", error);
+                    handleLocationError(); // Use the same error handler for API failures
+                }
+            };
+
+            const initializeWeatherApp = () => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const { latitude, longitude } = position.coords;
+                            fetchWeatherForLocation(latitude, longitude);
+                        },
+                        handleLocationError
+                    );
+                } else {
+                    handleLocationError();
+                }
+            };
+
+            initializeWeatherApp();
+        });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+
+</body>
 </html>
+
