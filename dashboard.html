@@ -50,7 +50,12 @@
   <!-- Weather Info -->
   <section class="card" id="weather">
     <h2>☀️ Weather Update</h2>
-    <p id="weatherData"><div class="spinner"></div></p>
+    <form id="weather-location-form" style="margin-bottom:10px;">
+      <input type="text" id="weather-location-input" placeholder="Enter city or village" class="form-control" style="max-width:250px;display:inline-block;" />
+      <button type="submit" class="btn btn-primary btn-sm">Get Weather</button>
+      <button type="button" class="btn btn-secondary btn-sm" id="weather-geolocate">Use My Location</button>
+    </form>
+    <div id="weatherData"><div class="spinner"></div></div>
   </section>
 
   <!-- Crop Advisory -->
@@ -162,6 +167,89 @@
 
   <!-- External JS -->
   <script src="js/dashboard.js"></script>
+  <script>
+async function fetchWeather(lat, lon, placeName) {
+  const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia/Kolkata`;
+  const weatherDiv = document.getElementById('weatherData');
+  weatherDiv.innerHTML = '<div class="spinner"></div>';
+  try {
+    const response = await fetch(apiUrl);
+    const data = await response.json();
+    const current = data.current;
+    const weatherCodes = {
+      0: "Clear sky ☀️", 1: "Mainly clear 🌤️", 2: "Partly cloudy ⛅", 3: "Overcast ☁️",
+      45: "Fog 🌫️", 48: "Rime fog 🌫️", 51: "Light drizzle 🌦️", 53: "Drizzle 🌦️", 55: "Dense drizzle 🌧️",
+      61: "Slight rain 🌦️", 63: "Rain 🌧️", 65: "Heavy rain 🌧️", 80: "Slight showers 🌦️", 81: "Showers 🌦️", 82: "Violent showers 🌧️", 95: "Thunderstorm ⛈️"
+    };
+    weatherDiv.innerHTML = `
+      <strong>Location:</strong> ${placeName}<br>
+      <strong>Temperature:</strong> ${current.temperature_2m}°C<br>
+      <strong>Condition:</strong> ${weatherCodes[current.weather_code] || "Unknown"}<br>
+      <strong>Humidity:</strong> ${current.relative_humidity_2m}%<br>
+      <strong>Wind:</strong> ${current.wind_speed_10m} km/h
+    `;
+  } catch {
+    weatherDiv.innerHTML = '<span class="text-danger">Could not fetch weather data.</span>';
+  }
+}
 
+async function fetchWeatherByLocationName(location) {
+  const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(location)}&count=1&language=en&format=json`;
+  const weatherDiv = document.getElementById('weatherData');
+  weatherDiv.innerHTML = '<div class="spinner"></div>';
+  try {
+    const geoRes = await fetch(geoUrl);
+    const geoData = await geoRes.json();
+    if (!geoData.results || geoData.results.length === 0) {
+      weatherDiv.innerHTML = '<span class="text-danger">Location not found.</span>';
+      return;
+    }
+    const place = geoData.results[0];
+    fetchWeather(place.latitude, place.longitude, `${place.name}${place.admin1 ? ', ' + place.admin1 : ''}${place.country ? ', ' + place.country : ''}`);
+  } catch {
+    weatherDiv.innerHTML = '<span class="text-danger">Could not fetch location data.</span>';
+  }
+}
+
+document.getElementById('weather-location-form').onsubmit = function(e) {
+  e.preventDefault();
+  const location = document.getElementById('weather-location-input').value.trim();
+  if (location) fetchWeatherByLocationName(location);
+};
+
+document.getElementById('weather-geolocate').onclick = function() {
+  const weatherDiv = document.getElementById('weatherData');
+  weatherDiv.innerHTML = '<div class="spinner"></div>';
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const lat = pos.coords.latitude, lon = pos.coords.longitude;
+        // Reverse geocode to get location name
+        const geoUrl = `https://geocoding-api.open-meteo.com/v1/reverse?latitude=${lat}&longitude=${lon}&language=en&format=json`;
+        try {
+          const geoRes = await fetch(geoUrl);
+          const geoData = await geoRes.json();
+          let placeName = "Your Location";
+          if (geoData.results && geoData.results.length > 0) {
+            const place = geoData.results[0];
+            placeName = `${place.name}${place.admin1 ? ', ' + place.admin1 : ''}${place.country ? ', ' + place.country : ''}`;
+          }
+          fetchWeather(lat, lon, placeName);
+        } catch {
+          fetchWeather(lat, lon, "Your Location");
+        }
+      },
+      () => {
+        weatherDiv.innerHTML = '<span class="text-danger">Location access denied.</span>';
+      }
+    );
+  } else {
+    weatherDiv.innerHTML = '<span class="text-danger">Geolocation not supported.</span>';
+  }
+};
+
+// Optionally, show weather for user's location on page load
+document.getElementById('weather-geolocate').click();
+</script>
 </body>
 </html>
